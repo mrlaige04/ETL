@@ -8,9 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Files\**" />
-    <EmbeddedResource Remove="Files\**" />
-    <None Remove="Files\**" />
+    <Folder Include="Files\folder_a\" />
+    <Folder Include="Files\folder_b\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
   </ItemGroup>
 
 </Project>
