@@ -19,22 +19,31 @@ namespace ETL
     public class Payer
     {
         public string name { get; set; }
-        public string payment { get; set; }
-        public string date { get; set; }
-        public string account_number { get; set; }
+        public decimal payment { get; set; }
+        public DateTime date { get; set; }
+        public long account_number { get; set; }
+        public string ConvertToJson()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 
     public class Transcation
     {
         public string city { get; set; }
         public List<Service> services { get; set; }
-        public string total { get; set; }
+        public decimal total { get; set; }
+
+        public string ConvertToJson()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 
     public class Service
     {
         public string name { get; set; }
         public List<Payer> payers { get; set; }
-        public string total { get; set; }
+        public decimal total { get; set; }
     }
 }
