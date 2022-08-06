@@ -10,12 +10,12 @@ using ETL.Interfaces;
 
 namespace ETL.Classes
 {
-    internal class CSVReader 
+    internal class CSVConverter 
     {
         StreamReader sreader;
         CsvReader csvreader;
         
-        public CSVReader(string path)
+        public CSVConverter(string path)
         {
             sreader = new(path);
             csvreader = new(sreader, culture: CultureInfo.InvariantCulture);
