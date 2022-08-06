@@ -8,7 +8,7 @@ using ETL.Classes;
 //    Console.WriteLine(csvreader.ReadFile(filepath));
 //    Console.WriteLine(new string('-',50));
 //}
-CSVReader csvreader = new($@"E:\WORK\Radency\ETL\Files\folder_a\payment.csv");
+CSVConverter csvreader = new($@"E:\WORK\Radency\ETL\Files\folder_a\payment.csv");
 
 
 IEnumerable<Payer> records = csvreader.GetAllRecords<Payer>();
