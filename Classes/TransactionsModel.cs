@@ -9,7 +9,7 @@ namespace ETL
 {
     public class Output
     {
-        public List<Transcation> transcations { get; set; }
+        public List<TranscationModel> transcations { get; set; }
 
         public string ConvertToJson()
         {
@@ -28,7 +28,7 @@ namespace ETL
         }
     }
 
-    public class Transcation
+    public class TranscationModel
     {
         public string city { get; set; }
         public List<Service> services { get; set; }
