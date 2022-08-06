@@ -14,24 +14,23 @@ namespace ETL.Classes
 {
     internal class TXTConverter
     {
-        FolderReader folderReader = new FolderReader();
-        public string ReadFile(string path)
+        private async Task<string> ReadFileAsync(string path)
         {
             using (StreamReader streamReader = new(path))
             {
-                return streamReader.ReadToEndAsync().Result;
+                return await streamReader.ReadToEndAsync();
             }
         }
 
-        public IEnumerable<TransactionDTO> GetListTransDTO(string[] lines)
+        private IEnumerable<TransactionDTO> GetListTransDTO(string[] lines)
         {
             foreach (var line in lines)
             {
                 yield return GetTransactionDTO(line);
             }
         }
-
-        public TransactionDTO GetTransactionDTO(string line)
+        
+        private TransactionDTO GetTransactionDTO(string line)
         {
             string[] fields = line.Split(",");
 
@@ -48,8 +47,8 @@ namespace ETL.Classes
             };
             return transcationDTO;
         }
-
-        public Output ConvertListDTO_ToOutput(IEnumerable<TransactionDTO> dtoModels)
+        
+        private Output ConvertListDTO_ToOutput(IEnumerable<TransactionDTO> dtoModels)
         {
             Output output = new();
 
@@ -97,6 +96,14 @@ namespace ETL.Classes
                 });
             }
             return output;
+        }
+
+        public async Task<Output> GetOutputFromTXTFileAsync(string filePath)
+        {
+            string fileContent = await ReadFileAsync(filePath);
+            string[] lines = fileContent.Split('\n');
+            IEnumerable<TransactionDTO> dtoS = GetListTransDTO(lines);
+            return ConvertListDTO_ToOutput(dtoS);
         }
     }
 }

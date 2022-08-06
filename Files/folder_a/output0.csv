@@ -1,0 +1,5 @@
+transcations/city,transcations/services/0/name,transcations/services/0/payers/0/name,transcations/services/0/payers/0/payment,transcations/services/0/payers/0/date,transcations/services/0/payers/0/account_number,transcations/services/0/payers/1/name,transcations/services/0/payers/1/payment,transcations/services/0/payers/1/date,transcations/services/0/payers/1/account_number,transcations/services/0/total,transcations/services/1/name,transcations/services/1/payers/0/name,transcations/services/1/payers/0/payment,transcations/services/1/payers/0/date,transcations/services/1/payers/0/account_number,transcations/services/1/total,transcations/total
+Lviv,Water,John Doe,500,2022-01-27T00:00:00,1234567,asdas asdsad,500,2022-01-27T00:00:00,1234567,1000,Heat,Mike Wiksen,720,2022-05-27T00:00:00,7654321,720,1720
+Kyiv,Water,John Doe,500,2022-01-27T00:00:00,1234567,,,,,500,Heat,Mike Wiksen,720,2022-05-27T00:00:00,7654321,720,1220
+Odessa,Water,John Doe,500,2022-01-27T00:00:00,1234567,,,,,500,,,,,,,500
+Rivne,Heat,Mike Wiksen,720,2022-05-27T00:00:00,7654321,,,,,720,,,,,,,720

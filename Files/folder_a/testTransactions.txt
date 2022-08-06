@@ -1,7 +1,0 @@
-John, Doe, "Lviv, Kleparivska 35, 4",  500.0, 2022-27-01, 1234567, Water
-asdas, asdsad, "Lviv, Kleparivska 35, 4",  500.0, 2022-27-01, 1234567, Water
-Mike, Wiksen, "Lviv, Kleparivska 40, 1",  720.0, 2022-27-05, 7654321, Heat
-John, Doe, "Kyiv, Kleparivska 35, 4",  500.0, 2022-27-01, 1234567, Water
-Mike, Wiksen, "Kyiv, Kleparivska 40, 1",  720.0, 2022-27-05, 7654321, Heat
-John, Doe, "Odessa, Kleparivska 35, 4",  500.0, 2022-27-01, 1234567, Water
-Mike, Wiksen, "Rivne, Kleparivska 40, 1",  720.0, 2022-27-05, 7654321, Heat
