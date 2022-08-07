@@ -10,67 +10,102 @@ namespace ETL.Classes
 {
     internal class FileManager
     {
-
-        FolderReader folderReader = new();
-        FileSystemWatcher CSVwatcher = new(@"..\..\..\Files\folder_a\", "*.csv");
-        FileSystemWatcher TXTwatcher = new(@"..\..\..\Files\folder_a\", "*.txt");
         string pathOutputBase = @"..\..\..\Files\folder_b\";
         string pathOutputToday = "";
-        MetaLogWriter metawriter;
-        LineConverter lineConverter = new();
-        CSVConverter csvconverter;
         int outputCounter = 0;
-        public FileManager()
-        {
-            pathOutputToday = pathOutputBase + DateTime.Now.ToString("MM/dd/yyyy") + @"\";            
-
-            System.Timers.Timer timer = new(1500);
-            timer.Elapsed += ProcessFiles;
-            timer.Enabled = true;            
-        }
         
-        private async void ProcessFiles(object? sender, ElapsedEventArgs e)
+        FolderReader folderReader = new();
+        MetaLogWorker metalogworker = new();
+        readonly FileConverter fileConverter = new();
+        readonly System.Timers.Timer timer = new(900);
+
+
+
+        public FileManager()
+        {           
+            timer.Elapsed += CheckFiles;
+            Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    if (DateTime.Now.Hour == 23 && DateTime.Now.Minute == 59 && DateTime.Now.Second >= 59)
+                    {
+                        metalogworker.SetPath(pathOutputBase + DateTime.Now.ToString(@"dd/MM/yyyy") + @$"\meta.log");
+                        metalogworker.Write();
+                        metalogworker.Dispose();
+                    }
+                    Task.Delay(300);
+                }
+            });
+            
+        }
+
+        private async void CheckFiles(object? sender, ElapsedEventArgs e)
         {
-            await ProcessDefaultFilesAsync();
-        }     
+            List<string> paths = folderReader.GetFilesPath(@"..\..\..\Files\folder_a\").ToList();
+            if(paths!=null&&paths.Count>0)
+            {
+                await ProcessFileAsync(paths);
+            }
+        }
 
         private async Task WriteToJsonFromOutputAsync(Output output)
         {
+            pathOutputToday = pathOutputBase + DateTime.Now.ToString("dd/MM/yyyy") + @"\";
             if (!Directory.Exists(pathOutputToday))
             {
                 Directory.CreateDirectory(pathOutputToday);
                 outputCounter = 0;
             }
 
-            using (StreamWriter sw = new(pathOutputToday + "output" + outputCounter + ".json"))
+            using (StreamWriter sw = new(pathOutputToday + "output" + ++outputCounter + ".json"))
             {
                 await sw.WriteAsync(JsonSerializer.Serialize(output));
-                outputCounter++;
-            }  
+            }
+            
         }
         
-        private async Task ProcessDefaultFilesAsync()
+        #region ManageFileManager
+        public void Start()
+        {
+            timer.Enabled = true;
+        }
+        public void Stop()
+        {
+            timer.Enabled = false;
+        }
+        #endregion            
+        
+        #region ProcessingFiles
+        
+        private async Task ProcessFileAsync(IEnumerable<string> paths)
         {
             await Task.Run(() =>
             {
-                List<string> defaultFilesPathes = folderReader.GetFilesPath().ToList();
-                List<string> csvPaths = defaultFilesPathes.Where(x => x.Contains(".csv")).ToList();
-                List<string> txtPaths = defaultFilesPathes.Where(x => x.Contains(".txt")).ToList();
+                
 
-                csvPaths.ForEach(async x =>
+                
+                List<string> csvPaths = paths.Where(x => x.Contains(".csv")).ToList();
+                List<string> txtPaths = paths.Where(x => x.Contains(".txt")).ToList();
+
+                
+                Parallel.ForEach(csvPaths, async x =>
                 {
-                    Output output = await lineConverter.GetOutputFromCSVFileAsync(x);
-                    await WriteToJsonFromOutputAsync(output);
+                    Output output = await fileConverter.GetOutputFromCSVFileAsync(x, metalogworker);
                     File.Delete(x);
+                    await WriteToJsonFromOutputAsync(output);
                 });
 
-                txtPaths.ForEach(async x =>
+                Parallel.ForEach(txtPaths, async x =>
                 {
-                    Output output = await lineConverter.GetOutputFromTXTFileAsync(x);
-                    await WriteToJsonFromOutputAsync(output);
+                    Output output = await fileConverter.GetOutputFromTXTFileAsync(x, metalogworker);
                     File.Delete(x);
+                    await WriteToJsonFromOutputAsync(output);
                 });
+
+                
             });
         }
+        #endregion
     }
 }
