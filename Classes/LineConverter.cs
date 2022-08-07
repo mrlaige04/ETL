@@ -12,15 +12,9 @@ using System.Globalization;
 
 namespace ETL.Classes
 {
-    internal class TXTConverter
+    internal class LineConverter
     {
-        private async Task<string> ReadFileAsync(string path)
-        {
-            using (StreamReader streamReader = new(path))
-            {
-                return await streamReader.ReadToEndAsync();
-            }
-        }
+        FileReader fileReader = new();
 
         private IEnumerable<TransactionDTO> GetListTransDTO(string[] lines)
         {
@@ -100,9 +94,19 @@ namespace ETL.Classes
 
         public async Task<Output> GetOutputFromTXTFileAsync(string filePath)
         {
-            string fileContent = await ReadFileAsync(filePath);
+            string fileContent = await fileReader.TxtReadAsync(filePath);
             string[] lines = fileContent.Split('\n');
             IEnumerable<TransactionDTO> dtoS = GetListTransDTO(lines);
+            return ConvertListDTO_ToOutput(dtoS);
+        }
+        
+        public async Task<Output> GetOutputFromCSVFileAsync(string filePath)
+        {
+            List<string> lines = (await fileReader.CSVReadAsync(filePath)).ToList();
+            int indexOfHeaders = lines.IndexOf("first_name,last_name,address,payment,date,account_number,service");
+            if (indexOfHeaders != -1) lines.RemoveAt(indexOfHeaders);
+            
+            IEnumerable<TransactionDTO> dtoS = GetListTransDTO(lines.ToArray());
             return ConvertListDTO_ToOutput(dtoS);
         }
     }

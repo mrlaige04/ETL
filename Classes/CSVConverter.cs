@@ -14,7 +14,8 @@ namespace ETL.Classes
     {
         StreamReader sreader;
         CsvReader csvreader;
-        
+        LineConverter lineConverter = new();
+        FileReader freader = new();
         public CSVConverter(string path)
         {
             sreader = new(path);
@@ -23,6 +24,11 @@ namespace ETL.Classes
         public IEnumerable<T> GetAllRecords<T>()
         {
             return csvreader.GetRecords<T>();
+        }
+
+        public async Task<Output> GetOutputFromFileAsync(string path)
+        {
+            return await lineConverter.GetOutputFromCSVFileAsync(path);
         }
     }
 }
