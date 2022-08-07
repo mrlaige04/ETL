@@ -23,30 +23,24 @@ namespace ETL.Classes
 
         public FileManager()
         {           
-            timer.Elapsed += CheckFiles;
-            Task.Factory.StartNew(() =>
-            {
-                while (true)
-                {
-                    if (DateTime.Now.Hour == 23 && DateTime.Now.Minute == 59 && DateTime.Now.Second >= 59)
-                    {
-                        metalogworker.SetPath(pathOutputBase + DateTime.Now.ToString(@"dd/MM/yyyy") + @$"\meta.log");
-                        metalogworker.Write();
-                        metalogworker.Dispose();
-                    }
-                    Task.Delay(300);
-                }
-            });
-            
+            timer.Elapsed += CheckFiles;   
         }
 
         private async void CheckFiles(object? sender, ElapsedEventArgs e)
         {
             List<string> paths = folderReader.GetFilesPath(@"..\..\..\Files\folder_a\").ToList();
-            if(paths!=null&&paths.Count>0)
+            if(paths!=null && paths.Count>0)
             {
                 await ProcessFileAsync(paths);
             }
+            if (DateTime.Now.Hour == 23 && DateTime.Now.Minute == 59 && DateTime.Now.Second >= 58)
+            {
+                metalogworker.SetPath(pathOutputBase + DateTime.Now.ToString(@"dd/MM/yyyy") + @$"\meta.log");
+                metalogworker.Write();
+                metalogworker.Dispose();
+                Console.WriteLine("Meta log created");
+            }
+            
         }
 
         private async Task WriteToJsonFromOutputAsync(Output output)
@@ -88,18 +82,15 @@ namespace ETL.Classes
                 List<string> csvPaths = paths.Where(x => x.Contains(".csv")).ToList();
                 List<string> txtPaths = paths.Where(x => x.Contains(".txt")).ToList();
 
-                
-                Parallel.ForEach(csvPaths, async x =>
+                csvPaths?.ForEach(async x =>
                 {
-                    Output output = await fileConverter.GetOutputFromCSVFileAsync(x, metalogworker);
-                    File.Delete(x);
+                    Output output = await fileConverter.GetOutputFromCSVFileAsync(x, metalogworker);                   
                     await WriteToJsonFromOutputAsync(output);
                 });
 
-                Parallel.ForEach(txtPaths, async x =>
+                txtPaths?.ForEach(async x =>
                 {
                     Output output = await fileConverter.GetOutputFromTXTFileAsync(x, metalogworker);
-                    File.Delete(x);
                     await WriteToJsonFromOutputAsync(output);
                 });
 

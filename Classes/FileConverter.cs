@@ -44,9 +44,11 @@ namespace ETL.Classes
                     service = fields[8].Trim()
                 };
                 metalogworker.parsedLines++;
+                Console.WriteLine("+1 parsed line");
             } catch
             {
                 metalogworker.foundErrors++;
+                Console.WriteLine("+1 error line");
             }
             return transcationDTO;
         }
@@ -104,9 +106,11 @@ namespace ETL.Classes
         public async Task<Output> GetOutputFromTXTFileAsync(string filePath, MetaLogWorker metalogworker)
         {
             string fileContent = await fileReader.TxtReadAsync(filePath);
+            File.Delete(filePath);
             string[] lines = fileContent.Split('\n', StringSplitOptions.RemoveEmptyEntries);
             IEnumerable<TransactionDTO> dtoS = GetListTransDTO(lines, metalogworker);
             metalogworker.parsedFiles++;
+            Console.WriteLine("+1 parsed file");
             return ConvertListDTO_ToOutput(dtoS);
         }
         
@@ -115,10 +119,13 @@ namespace ETL.Classes
             List<string> lines = (await fileReader.CSVReadAsync(filePath)).ToList();
             int indexOfHeaders = lines.IndexOf("first_name,last_name,address,payment,date,account_number,service");
 
-            if (indexOfHeaders != -1) lines.RemoveAt(indexOfHeaders);          
+            if (indexOfHeaders != -1) lines.RemoveAt(indexOfHeaders);
+            
+            File.Delete(filePath);
             
             IEnumerable<TransactionDTO> dtoS = GetListTransDTO(lines.ToArray(), metalogworker);
             metalogworker.parsedFiles++;
+            Console.WriteLine("+1 parsed file");
             return ConvertListDTO_ToOutput(dtoS);
         }
     }
