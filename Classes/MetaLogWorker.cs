@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ETL.Classes
+﻿namespace ETL.Classes
 {
     internal class MetaLogWorker : IDisposable
     {
@@ -12,9 +6,7 @@ namespace ETL.Classes
         public int parsedFiles = 0;
         public int parsedLines = 0;
         public int foundErrors = 0;
-
-
-        
+ 
         public void Write()
         {
             string message = "parsed files: " + parsedFiles + "\n" + "parsed lines: " + parsedLines + "\n" + "foundErrors: " + foundErrors + "\n";
@@ -34,8 +26,6 @@ namespace ETL.Classes
             parsedFiles = 0;
             parsedLines = 0;
             foundErrors = 0;
-        }
-
-        
+        }     
     }
 }
