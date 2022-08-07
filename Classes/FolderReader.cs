@@ -10,10 +10,9 @@ namespace ETL
 {
     internal class FolderReader
     {
-        string path2 = Path.GetFullPath(@"..\..\..\Files\folder_a\");
-        public IEnumerable<string> GetFilesPath()
+        public IEnumerable<string> GetFilesPath(string path)
         {
-            DirectoryInfo th = new DirectoryInfo(path2);
+            DirectoryInfo th = new DirectoryInfo(path);
             var files = th.GetFiles().Where(file => file.Extension is ".csv" or ".txt");
             var files_pathes = files.Select(file => file.FullName);
             return files_pathes;
