@@ -48,6 +48,7 @@ namespace ETL.Classes
             } catch
             {
                 metalogworker.foundErrors++;
+                
                 Console.WriteLine("+1 error line");
             }
             return transcationDTO;

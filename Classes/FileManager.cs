@@ -17,7 +17,7 @@ namespace ETL.Classes
         FolderReader folderReader = new();
         MetaLogWorker metalogworker = new();
         readonly FileConverter fileConverter = new();
-        readonly System.Timers.Timer timer = new(900);
+        readonly System.Timers.Timer timer = new(800);
 
 
 
@@ -33,7 +33,7 @@ namespace ETL.Classes
             {
                 await ProcessFileAsync(paths);
             }
-            if (DateTime.Now.Hour == 23 && DateTime.Now.Minute == 59 && DateTime.Now.Second >= 58)
+            if (DateTime.Now.Hour == 23 && DateTime.Now.Minute == 59 && DateTime.Now.Second>=59)
             {
                 metalogworker.SetPath(pathOutputBase + DateTime.Now.ToString(@"dd/MM/yyyy") + @$"\meta.log");
                 metalogworker.Write();
