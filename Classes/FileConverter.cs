@@ -19,6 +19,8 @@ namespace ETL.Classes
         {
             foreach (var line in lines)
             {
+                metalogworker.parsedLines++;
+                Console.WriteLine("+1 parsed line");
                 TransactionDTO dto = GetTransactionDTO(line, metalogworker);
                 if(dto!=null)
                     yield return GetTransactionDTO(line, metalogworker);
@@ -30,10 +32,10 @@ namespace ETL.Classes
             string[] fields = line.Split(",");
 
             string[] validformats = new[] { "MM/dd/yyyy", "yyyy/MM/dd", "MM/dd/yyyy", "MM/dd/yyyy", "yyyy-dd-MM", "yyyy-MM-dd" };
-            TransactionDTO transcationDTO = new();
+            
             try
             {
-                transcationDTO = new TransactionDTO()
+                return new TransactionDTO()
                 {
                     first_name = fields[0].Trim(),
                     last_name = fields[1].Trim(),
@@ -43,15 +45,12 @@ namespace ETL.Classes
                     account_number = long.Parse(fields[7].Trim()),
                     service = fields[8].Trim()
                 };
-                metalogworker.parsedLines++;
-                Console.WriteLine("+1 parsed line");
             } catch
             {
-                metalogworker.foundErrors++;
-                
                 Console.WriteLine("+1 error line");
-            }
-            return transcationDTO;
+                metalogworker.foundErrors++;
+                return null;
+            }           
         }
         
         private Output ConvertListDTO_ToOutput(IEnumerable<TransactionDTO> dtoModels)
@@ -118,11 +117,12 @@ namespace ETL.Classes
         public async Task<Output> GetOutputFromCSVFileAsync(string filePath,  MetaLogWorker  metalogworker) 
         {            
             List<string> lines = (await fileReader.CSVReadAsync(filePath)).ToList();
+            File.Delete(filePath);
             int indexOfHeaders = lines.IndexOf("first_name,last_name,address,payment,date,account_number,service");
 
             if (indexOfHeaders != -1) lines.RemoveAt(indexOfHeaders);
             
-            File.Delete(filePath);
+            
             
             IEnumerable<TransactionDTO> dtoS = GetListTransDTO(lines.ToArray(), metalogworker);
             metalogworker.parsedFiles++;

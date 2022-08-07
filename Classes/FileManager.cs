@@ -17,9 +17,9 @@ namespace ETL.Classes
         FolderReader folderReader = new();
         MetaLogWorker metalogworker = new();
         readonly FileConverter fileConverter = new();
-        readonly System.Timers.Timer timer = new(800);
+        readonly System.Timers.Timer timer = new(1000);
 
-
+        List<string> filePaths_Checked = new List<string>();
 
         public FileManager()
         {           
@@ -31,6 +31,7 @@ namespace ETL.Classes
             List<string> paths = folderReader.GetFilesPath(@"..\..\..\Files\folder_a\").ToList();
             if(paths!=null && paths.Count>0)
             {
+                filePaths_Checked.AddRange(paths);
                 await ProcessFileAsync(paths);
             }
             if (DateTime.Now.Hour == 23 && DateTime.Now.Minute == 59 && DateTime.Now.Second>=59)
@@ -39,6 +40,7 @@ namespace ETL.Classes
                 metalogworker.Write();
                 metalogworker.Dispose();
                 Console.WriteLine("Meta log created");
+                filePaths_Checked.Clear();
             }
             
         }
@@ -75,16 +77,13 @@ namespace ETL.Classes
         private async Task ProcessFileAsync(IEnumerable<string> paths)
         {
             await Task.Run(() =>
-            {
-                
-
-                
+            {      
                 List<string> csvPaths = paths.Where(x => x.Contains(".csv")).ToList();
                 List<string> txtPaths = paths.Where(x => x.Contains(".txt")).ToList();
 
                 csvPaths?.ForEach(async x =>
                 {
-                    Output output = await fileConverter.GetOutputFromCSVFileAsync(x, metalogworker);                   
+                    Output output = await fileConverter.GetOutputFromCSVFileAsync(x, metalogworker);
                     await WriteToJsonFromOutputAsync(output);
                 });
 
@@ -92,9 +91,7 @@ namespace ETL.Classes
                 {
                     Output output = await fileConverter.GetOutputFromTXTFileAsync(x, metalogworker);
                     await WriteToJsonFromOutputAsync(output);
-                });
-
-                
+                });              
             });
         }
         #endregion
