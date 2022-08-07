@@ -53,8 +53,18 @@ namespace ETL
         public string ConvertToJSON()
         {
             return JsonSerializer.Serialize(this);
-        }
+        }        
+    }
+
+    public class CSVDTO
+    {
         
+        //public string "FirstNameLastNameAddressPaymentDateAccountNumberService" { get; set; }
+
+        public string ConvertToJSON()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 
     public class Service
